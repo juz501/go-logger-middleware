@@ -33,27 +33,33 @@ var LogDefaultFormat = "{{.StartTime}} | {{.Status}} | \t {{.Duration}} | {{.Hos
 // default Log instance.
 var LogDefaultDateFormat = time.RFC3339
 
-// LoggerInterface interface
-type LoggerInterface interface {
+// ALogger interface
+type ALogger interface {
   Println(v ...interface{})
   Printf(format string, v ...interface{})
-  SetOutput(w io.Writer)
 }
 
 // Log is a middleware handler that logs the request as it goes in and the response as it goes out.
 type Logger struct {
   // LoggerInterface implements more log.Logger interface to be compatible with other implementations
-  LoggerInterface
+  ALogger 
   dateFormat string
   template   *template.Template
 }
 
 // NewLogger returns a new Logger instance
+func NewLogger() *Logger {
+  logger := &Logger{ALogger: log.New(os.Stdout, "[negroni] ", 0), dateFormat: LogDefaultDateFormat}
+  logger.SetFormat(LogDefaultFormat)
+  return logger
+}
+
+// NewLogger with io.writer returns a new Logger instance
 func NewLogger(w io.Writer) *Logger {
   if w == nil {
     w = os.Stdout
   }
-  logger := &Logger{LoggerInterface: log.New(w, "[negroni] ", 0), dateFormat: LogDefaultDateFormat}
+  logger := &Logger{ALogger: log.New(w, "[negroni] ", 0), dateFormat: LogDefaultDateFormat}
   logger.SetFormat(LogDefaultFormat)
   return logger
 }
@@ -64,10 +70,6 @@ func (l *Logger) SetFormat(format string) {
 
 func (l *Logger) SetDateFormat(format string) {
   l.dateFormat = format
-}
-
-func (l *Logger) SetOutput(w io.Writer) {
-  l.LoggerInterface.SetOutput(w)
 }
 
 func (l *Logger) ServeHTTP(rw http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
