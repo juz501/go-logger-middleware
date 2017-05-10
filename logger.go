@@ -1,4 +1,4 @@
-package chromatix
+package juz501 
 
 import (
   "bytes"
