@@ -1,4 +1,4 @@
-package juz501 
+package go_logger_middleware
 
 import (
   "bytes"
