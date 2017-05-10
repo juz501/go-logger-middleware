@@ -55,7 +55,7 @@ func NewLogger() *Logger {
 }
 
 // NewLogger with io.writer returns a new Logger instance
-func NewLogger(w io.Writer) *Logger {
+func NewLoggerWithStream(w io.Writer) *Logger {
   if w == nil {
     w = os.Stdout
   }
